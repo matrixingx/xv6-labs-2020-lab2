@@ -95,3 +95,18 @@ sys_uptime(void)
   release(&tickslock);
   return xticks;
 }
+
+// wip: trace syscall
+uint64
+sys_trace(void)
+{
+  int mask;
+  if(argint(0, &mask) < 0)
+    return -1;
+  //printf("sys_trace , n = %d\n",n);
+  struct proc *p = myproc();
+  // 将需要追踪的系统调用存到proc中
+  p->trace_mask = mask;
+  
+  return 0;
+}

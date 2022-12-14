@@ -6,6 +6,10 @@
 #include "memlayout.h"
 #include "spinlock.h"
 #include "proc.h"
+#include "sysinfo.h"
+
+uint64 getFreeMem();
+uint64 getUsingProc();
 
 uint64
 sys_exit(void)
@@ -108,5 +112,26 @@ sys_trace(void)
   // 将需要追踪的系统调用存到proc中
   p->trace_mask = mask;
   
+  return 0;
+}
+
+// wip: sysinfo syscall
+uint64 
+sys_sysinfo(void)
+{
+  struct sysinfo info;
+  uint64 addr;
+  struct proc *p = myproc();
+
+  info.freemem = getFreeMem();
+  info.nproc = getUsingProc();
+
+
+  if (argaddr(0,&addr) < 0){
+    return -1;
+  }
+  if (copyout(p->pagetable, addr, (char *)&info,sizeof(info))) {
+    return -1;
+  }
   return 0;
 }
